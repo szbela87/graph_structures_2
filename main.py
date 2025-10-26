@@ -366,7 +366,7 @@ with col2:
 
             # INPUT_NUM slider
             INPUT_NUM = st.slider("Bemeneti neuronok száma (INPUT_NUM)",
-                                  min_value=10, max_value=2000, value=85)
+                                  min_value=10, max_value=2000, value=117)
 
             # ACT_TYPE slider
             ACT_TYPE = st.slider("Aktivációs típus (ACT_TYPE)", min_value=0, max_value=10, value=9)
@@ -421,7 +421,8 @@ with col2:
                             'INPUT_NUM': INPUT_NUM,
                             'P_IN': P_IN,
                             'P_OUT': P_OUT,
-                            'RES_NUM': G.number_of_nodes()
+                            'RES_NUM': G.number_of_nodes(),
+                            'RES_DIRECTED': RES_DIRECTED
                         }
 
                         st.success("A számítási gráf sikeresen legenerálva!")
@@ -481,9 +482,11 @@ with col2:
                         zip_file.writestr(os.path.basename(file_path), file_data)
 
                 zip_buffer.seek(0)
+                
+                RD = "ud" if gen_data['RES_DIRECTED'] == "undirected" else "di"
 
                 # Create ZIP download button with consistent naming
-                zip_filename = f"{gen_data['CNAME']}_FF{gen_data['FF']}_R{gen_data['RES_NUM']}_I{gen_data['INPUT_NUM']}_PI{int(100*gen_data['P_IN'])}_PO{int(100*gen_data['P_OUT'])}.zip"
+                zip_filename = f"{gen_data['CNAME']}_FF{gen_data['FF']}_RD{RD}_R{gen_data['RES_NUM']}_I{gen_data['INPUT_NUM']}_PI{int(100*gen_data['P_IN'])}_PO{int(100*gen_data['P_OUT'])}.zip"
                 st.download_button(
                     label=f"📦 Fájlok letöltése",
                     data=zip_buffer,
