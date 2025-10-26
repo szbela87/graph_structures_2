@@ -168,9 +168,27 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
     for j in range(output_num):
         activations = add_input(activations, neuron_id=j + 1 + INPUT_NUM + RES_NUM, input_id=1, act_type=0, modifiable=1)
         graph = add_neuron(graph, neuron_id=j + 1 + INPUT_NUM + RES_NUM)
+        
+    # Reservoir to output connections
+    for j in range(RES_NUM):
+        for k in range(output_num):
+            r = random.random()
+            if r < P_OUT:
+                si = INPUT_NUM + j + 1
+                ei = k + 1 + INPUT_NUM + RES_NUM
+                graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
+
+    # Input to reservoir connections
+    for i in range(INPUT_NUM):
+        for j in range(RES_NUM):
+            r = random.random()
+            if r < P_IN:
+                si = i + 1
+                ei = INPUT_NUM + j + 1
+                graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
 
     print(f"Number of nodes in G graph: {G.number_of_nodes()}")
-    edges = list(G.edges)
+    edges = list(set(G.edges))
 
     # Reservoir to reservoir connections
     for edge in edges:
@@ -207,25 +225,8 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
                     shared_weight_groups.append(shared_group)
                     
     
-
-    # Reservoir to output connections
-    for j in range(RES_NUM):
-        for k in range(output_num):
-            r = random.random()
-            if r < P_OUT:
-                si = INPUT_NUM + j + 1
-                ei = k + 1 + INPUT_NUM + RES_NUM
-                graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
-
-    # Input to reservoir connections
-    for i in range(INPUT_NUM):
-        for j in range(RES_NUM):
-            r = random.random()
-            if r < P_IN:
-                si = i + 1
-                ei = INPUT_NUM + j + 1
-                graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
-
+    
+    
     ######################
     # Saving the network #
     ######################
