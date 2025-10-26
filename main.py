@@ -3,6 +3,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 import math
+import zipfile
+import io
+import os
 from utils import generate_full_graph
 
 # Wide layout
@@ -410,18 +413,81 @@ with col2:
                             DRAW=DRAW
                         )
 
-                        # Display success message and file paths
+                        # Store generated files in session state (for download buttons outside form)
+                        st.session_state.generated_files = {
+                            'file_paths': file_paths,
+                            'CNAME': CNAME,
+                            'FF': FF,
+                            'INPUT_NUM': INPUT_NUM,
+                            'P_IN': P_IN,
+                            'P_OUT': P_OUT,
+                            'RES_NUM': G.number_of_nodes()
+                        }
+
                         st.success("A számítási gráf sikeresen legenerálva!")
-
-                        # Display trainable parameters
-                        trainable_params = file_paths.get('trainable_parameters')
-                        if trainable_params is not None:
-                            st.write(f"**Tanítható paraméterek:** {trainable_params}")
-
-                        st.write("Generált fájlok:")
-                        for file_type, file_path in file_paths.items():
-                            if file_type != 'trainable_parameters':  # Skip trainable_parameters in file list
-                                st.write(f"- **{file_type}:** `{file_path}`")
 
                     except Exception as e:
                         st.error(f"Hiba a gráf generálása során: {str(e)}")
+                        # Clear generated files on error
+                        if 'generated_files' in st.session_state:
+                            del st.session_state.generated_files
+
+        # Download section (OUTSIDE the form)
+        if 'generated_files' in st.session_state:
+            gen_data = st.session_state.generated_files
+            file_paths = gen_data['file_paths']
+
+            st.write("---")
+
+            # Display trainable parameters
+            trainable_params = file_paths.get('trainable_parameters')
+            if trainable_params is not None:
+                st.write(f"**Tanítható paraméterek:** {trainable_params}")
+
+            st.write("**Generált fájlok:**")
+
+            # Collect files for ZIP
+            files_to_zip = []
+            for file_type, file_path in file_paths.items():
+                if file_type != 'trainable_parameters' and file_path is not None:
+                    st.write(f"- `{os.path.basename(file_path)}`")
+
+                    # Read file content for ZIP
+                    try:
+                        if file_path.endswith('.png'):
+                            # For PNG files, read as binary
+                            with open(file_path, 'rb') as f:
+                                file_data = f.read()
+                        else:
+                            # For .dat files, read as text
+                            with open(file_path, 'r') as f:
+                                file_data = f.read()
+
+                        # Store for ZIP creation
+                        files_to_zip.append((file_path, file_data))
+
+                    except Exception as e:
+                        st.warning(f"Nem sikerült betölteni: {file_path} - {str(e)}")
+
+            # Create a ZIP file with all generated files
+            if files_to_zip:
+                st.write("---")
+
+                # Create ZIP in memory
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                    for file_path, file_data in files_to_zip:
+                        # Add file to ZIP
+                        zip_file.writestr(os.path.basename(file_path), file_data)
+
+                zip_buffer.seek(0)
+
+                # Create ZIP download button with consistent naming
+                zip_filename = f"{gen_data['CNAME']}_FF{gen_data['FF']}_R{gen_data['RES_NUM']}_I{gen_data['INPUT_NUM']}_PI{int(100*gen_data['P_IN'])}_PO{int(100*gen_data['P_OUT'])}.zip"
+                st.download_button(
+                    label=f"📦 Fájlok letöltése",
+                    data=zip_buffer,
+                    file_name=zip_filename,
+                    mime="application/zip",
+                    key="download_all_zip"
+                )
