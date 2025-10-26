@@ -322,37 +322,37 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
     print(f"Trainable parameters: {trainable_parameters}")
 
     # Saving to files
-    graph_datas = f"graph_{CNAME}_FF{FF}_R{RES_NUM}_.dat"
+    graph_datas = f"graph_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat"
     f = open(graph_datas, "w")
     for line in to_file_graph:
         f.write(line + "\n")
     f.close()
 
-    logic_datas = f"logic_{CNAME}_FF{FF}_R{RES_NUM}_.dat"
+    logic_datas = f"logic_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat"
     f = open(logic_datas, "w")
     for line in to_file_logic:
         f.write(line + "\n")
     f.close()
 
-    fixwb_datas = f"fixwb_{CNAME}_FF{FF}_R{RES_NUM}_.dat"
+    fixwb_datas = f"fixwb_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat"
     f = open(fixwb_datas, "w")
     for line in to_file_fixwb:
         f.write(line + "\n")
     f.close()
 
-    shared_w_datas = f"shared_w_{CNAME}_FF{FF}_R{RES_NUM}_.dat"
+    shared_w_datas = f"shared_w_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat"
     f = open(shared_w_datas, "w")
     for line in to_file_shared_w:
         f.write(line + "\n")
     f.close()
 
-    shared_b_datas = f"shared_b_{CNAME}_FF{FF}_R{RES_NUM}_.dat"
+    shared_b_datas = f"shared_b_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat"
     f = open(shared_b_datas, "w")
     for line in to_file_shared_b:
         f.write(line + "\n")
     f.close()
 
-    print(f"Id: *_{CNAME}_FF{FF}_R{RES_NUM}_.dat")
+    print(f"Id: *_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.dat")
 
     graph_image_file = None
     if DRAW:
@@ -363,7 +363,7 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
         plt.title(f"Graph: {CNAME}")
 
         # Save figure to file instead of showing
-        graph_image_file = f"graph_viz_{CNAME}_FF{FF}_R{RES_NUM}_.png"
+        graph_image_file = f"graph_viz_{CNAME}_FF{FF}_R{RES_NUM}_I{INPUT_NUM}_PI{int(100*P_IN)}_PO{int(100*P_OUT)}.png"
         plt.savefig(graph_image_file, dpi=150, bbox_inches='tight')
         print(f"Graph visualization saved to: {graph_image_file}")
         plt.close(fig)
