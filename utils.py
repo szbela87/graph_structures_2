@@ -176,31 +176,37 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
     for edge in edges:
         si = edge[0] + INPUT_NUM + 1
         ei = edge[1] + INPUT_NUM + 1
+        
+        if si != ei:
 
-        if RES_DIRECTED == "directed":
-            r = random.random()
-            if FF == False:
-                if r > 0.5:
-                    graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
+            if RES_DIRECTED == "directed":
+                r = random.random()
+                if FF == False:
+                    if r > 0.5:
+                        graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
+                    else:
+                        graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
                 else:
-                    graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
-            else:
-                if ei > si:
-                    graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
-                else:
-                    graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
+                    if ei > si:
+                        graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
+                    else:
+                        graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
 
-        if RES_DIRECTED == "undirected":
-            shared_group = []
+            if RES_DIRECTED == "undirected":
+                
+            
+                shared_group = []
 
-            graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
-            graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
+                graph = add_neighbor(graph, neuron_id=si, neighbor_n_id=ei, neighbor_i_id=1, modifiable=1)
+                graph = add_neighbor(graph, neuron_id=ei, neighbor_n_id=si, neighbor_i_id=1, modifiable=1)
 
-            shared_group.append((si, ei, 1))
-            shared_group.append((ei, si, 1))
+                shared_group.append((si, ei, 1))
+                shared_group.append((ei, si, 1))
 
-            if len(shared_group) > 0:
-                shared_weight_groups.append(shared_group)
+                if len(shared_group) > 0:
+                    shared_weight_groups.append(shared_group)
+                    
+    
 
     # Reservoir to output connections
     for j in range(RES_NUM):
@@ -372,7 +378,7 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
 
 
 
-    # Return file paths and trainable parameters
+    # Return file paths and network statistics
     return {
         'graph': graph_datas,
         'logic': logic_datas,
@@ -380,7 +386,10 @@ def generate_full_graph(G, INPUT_NUM, RES_DIRECTED, FF, P_IN, P_OUT, CNAME, ACT_
         'shared_w': shared_w_datas,
         'shared_b': shared_b_datas,
         'graph_viz': graph_image_file,
-        'trainable_parameters': trainable_parameters
+        'trainable_parameters': trainable_parameters,
+        'shared_weight_groups': len(shared_weight_groups),
+        'shared_bias_groups': len(shared_bias_groups),
+        'neuron_num': neuron_num
     }
 
 

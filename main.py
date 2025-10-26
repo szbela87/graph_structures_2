@@ -440,17 +440,34 @@ with col2:
 
             st.write("---")
 
-            # Display trainable parameters
+            # Display network statistics
+            st.write("**Hálózat statisztikák:**")
+
+            neuron_num = file_paths.get('neuron_num')
+            if neuron_num is not None:
+                st.write(f"- **Neuronok száma (neuron_num):** {neuron_num}")
+
             trainable_params = file_paths.get('trainable_parameters')
             if trainable_params is not None:
-                st.write(f"**Tanítható paraméterek:** {trainable_params}")
+                st.write(f"- **Tanítható paraméterek:** {trainable_params}")
 
+            shared_weight_groups = file_paths.get('shared_weight_groups')
+            if shared_weight_groups is not None:
+                st.write(f"- **Megosztott súly csoportok (shared_weights_num):** {shared_weight_groups}")
+
+            shared_bias_groups = file_paths.get('shared_bias_groups')
+            if shared_bias_groups is not None:
+                st.write(f"- **Megosztott bias csoportok (shared_biases_num):** {shared_bias_groups}")
+
+            st.write("")
             st.write("**Generált fájlok:**")
 
             # Collect files for ZIP
             files_to_zip = []
+            # Skip statistics fields when collecting files
+            stats_fields = ['trainable_parameters', 'shared_weight_groups', 'shared_bias_groups', 'neuron_num']
             for file_type, file_path in file_paths.items():
-                if file_type != 'trainable_parameters' and file_path is not None:
+                if file_type not in stats_fields and file_path is not None:
                     st.write(f"- `{os.path.basename(file_path)}`")
 
                     # Read file content for ZIP
